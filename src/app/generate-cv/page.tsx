@@ -4,7 +4,8 @@ import PersonalInfoSection from '@/components/CVWizard/PersonalInfoSection';
 import SkillsSection from '@/components/CVWizard/SkillsSection';
 import StudiesSection from '@/components/CVWizard/StudiesSection';
 import ScrollProgressBar from '@/components/ScrollProgressBar';
-import React, { useEffect, useState } from 'react'
+import axios from 'axios';
+import React, { useState } from 'react'
 export type PersonalInformation = {
     firstName: string,
     lastName: string,
@@ -57,9 +58,39 @@ export default function CVWizard() {
         isCollapsed: false,
     }]);
     const [skills, setSkills] = useState<string[]>([]);
-    useEffect(()=>{
-        console.log(studies)
-    },[studies])
+    const handleGenerateCV = async () => {
+        try {
+            const formData = {
+                personalInfo: {
+                    fullName: `${personalInformation.firstName} ${personalInformation.lastName}`,
+                    phone: personalInformation.phoneNumber,
+                    email: personalInformation.email,
+                    jobTitle: personalInformation.jobTitle,
+                    location: personalInformation.location,
+                    linkedin: personalInformation.linkedin,
+                },
+                experiences: experiences.map(({ jobTitle, employer, startDate, endDate, description }) => ({
+                    jobTitle,
+                    employer,
+                    startDate,
+                    endDate,
+                    description,
+                })),
+                studies: studies.map(({ degree, institution, startDate, endDate }) => ({
+                    degree,
+                    institution,
+                    startDate,
+                    graduationDate: endDate,
+                })),
+                skills,
+            };
+            const response = await axios.post('/api/generate-cv', formData);
+            console.log('CV generado:', response.data);
+        } catch (error) {
+            console.error('Error generando el CV:', error);
+        }
+    };
+
     return (
         <div>
             <ScrollProgressBar />
@@ -68,7 +99,7 @@ export default function CVWizard() {
             <StudiesSection studies={studies} setStudies={setStudies} />
             <SkillsSection skills={skills} setSkills={setSkills} />
             <div className='flex items-center justify-center mb-5'>
-                <button className='border-2 border-solid border-indigo-600 rounded-full overflow-hidden duration-200 hover:opacity-70 hover:scale-95 cursor-pointer'>
+                <button onClick={handleGenerateCV} className='border-2 border-solid border-indigo-600 rounded-full overflow-hidden duration-200 hover:opacity-70 hover:scale-95 cursor-pointer'>
                     <p className='font-fugaz px-6 sm:px-10 whitespace-nowrap py-2 sm:py-3 text-indigo-600'>Generate Resume</p>
                 </button>
             </div>
