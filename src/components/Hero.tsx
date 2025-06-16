@@ -16,7 +16,7 @@ export default function Hero() {
                 Just input your details and let our AI enhance, structure, and design your CV to <span className='font-semibold'>stand out from the crowd!</span>
             </p>
             <div className='flex items-center justify-center mt-5'>
-                <Button text='Start generating' onClick={handleRedirect} />
+                <Button text='Get Started' onClick={handleRedirect} />
             </div>
         </div>
     )

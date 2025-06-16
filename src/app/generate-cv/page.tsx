@@ -1,8 +1,19 @@
 "use client"
 import { ExperienceSection } from '@/components/CVWizard/ExperienceSection';
+import PersonalInfoSection from '@/components/CVWizard/PersonalInfoSection';
+import SkillsSection from '@/components/CVWizard/SkillsSection';
+import StudiesSection from '@/components/CVWizard/StudiesSection';
 import ScrollProgressBar from '@/components/ScrollProgressBar';
-import SectionWrapper from '@/components/SectionWrapper';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+export type PersonalInformation = {
+    firstName: string,
+    lastName: string,
+    phoneNumber: string,
+    email: string,
+    jobTitle: string,
+    location: string,
+    linkedin: string,
+}
 export type Experience = {
     jobTitle: string,
     employer: string,
@@ -11,7 +22,24 @@ export type Experience = {
     description: string,
     isCollapsed: boolean,
 }
+export type Studies = {
+    degree: string;
+    institution: string;
+    startDate: string;
+    endDate: string;
+    notGraduated: boolean,
+    isCollapsed: boolean
+}
 export default function CVWizard() {
+    const [personalInformation, setPersonalInformation] = useState<PersonalInformation>({
+        firstName: '',
+        lastName: '',
+        phoneNumber: '',
+        email: '',
+        jobTitle: '',
+        location: '',
+        linkedin: '',
+    });
     const [experiences, setExperiences] = useState<Experience[]>([{
         jobTitle: '',
         employer: '',
@@ -19,76 +47,31 @@ export default function CVWizard() {
         endDate: '',
         description: '',
         isCollapsed: false,
-    }])
+    }]);
+    const [studies, setStudies] = useState<Studies[]>([{
+        degree: '',
+        institution: '',
+        startDate: '',
+        endDate: '',
+        notGraduated: false,
+        isCollapsed: false,
+    }]);
+    const [skills, setSkills] = useState<string[]>([]);
+    useEffect(()=>{
+        console.log(studies)
+    },[studies])
     return (
         <div>
             <ScrollProgressBar />
-            <SectionWrapper id="personal-information" header="Personal Information">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <div className="sm:col-span-2 mb-2">
-                        <p className="text-gray-600 text-base text-center">
-                            This section gathers your basic personal details. Make sure everything is up to date so employers can easily contact you.
-                        </p>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
-                        <input
-                            type="text"
-                            placeholder="John"
-                            className="w-full bg-indigo-100 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-indigo-300"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
-                        <input
-                            type="text"
-                            placeholder="Doe"
-                            className="w-full bg-indigo-100 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-indigo-300"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-                        <input
-                            type="text"
-                            placeholder="+1 234 567 8901"
-                            className="w-full bg-indigo-100 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-indigo-300"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-                        <input
-                            type="email"
-                            placeholder="john.doe@example.com"
-                            className="w-full bg-indigo-100 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-indigo-300"
-                        />
-                    </div>
-                    <div className="sm:col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Job Title</label>
-                        <input
-                            type="text"
-                            placeholder="Frontend Developer"
-                            className="w-full bg-indigo-100 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-indigo-300"
-                        />
-                    </div>
-                    <div className="sm:col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
-                        <input
-                            type="text"
-                            placeholder="New York, USA"
-                            className="w-full bg-indigo-100 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-indigo-300"
-                        />
-                    </div>
-                    <div className="sm:col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">LinkedIn Profile</label>
-                        <input
-                            type="url"
-                            placeholder="https://linkedin.com/in/johndoe"
-                            className="w-full bg-indigo-100 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-indigo-300"
-                        />
-                    </div>
-                </div>
-            </SectionWrapper>
+            <PersonalInfoSection personalInformation={personalInformation} setPersonalInformation={setPersonalInformation} />
             <ExperienceSection experiences={experiences} setExperiences={setExperiences} />
+            <StudiesSection studies={studies} setStudies={setStudies} />
+            <SkillsSection skills={skills} setSkills={setSkills} />
+            <div className='flex items-center justify-center mb-5'>
+                <button className='border-2 border-solid border-indigo-600 rounded-full overflow-hidden duration-200 hover:opacity-70 hover:scale-95 cursor-pointer'>
+                    <p className='font-fugaz px-6 sm:px-10 whitespace-nowrap py-2 sm:py-3 text-indigo-600'>Generate Resume</p>
+                </button>
+            </div>
         </div>
     )
 }
