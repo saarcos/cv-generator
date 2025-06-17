@@ -5,6 +5,7 @@ import SkillsSection from '@/components/CVWizard/SkillsSection';
 import StudiesSection from '@/components/CVWizard/StudiesSection';
 import ScrollProgressBar from '@/components/ScrollProgressBar';
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
 import React, { useState } from 'react'
 export type PersonalInformation = {
     firstName: string,
@@ -32,6 +33,8 @@ export type Studies = {
     isCollapsed: boolean
 }
 export default function CVWizard() {
+    const router = useRouter();
+    const [loading, setLoading] = useState(false);
     const [personalInformation, setPersonalInformation] = useState<PersonalInformation>({
         firstName: '',
         lastName: '',
@@ -59,6 +62,7 @@ export default function CVWizard() {
     }]);
     const [skills, setSkills] = useState<string[]>([]);
     const handleGenerateCV = async () => {
+        setLoading(true);
         try {
             const formData = {
                 personalInfo: {
@@ -85,9 +89,13 @@ export default function CVWizard() {
                 skills,
             };
             const response = await axios.post('/api/generate-cv', formData);
-            console.log('CV generado:', response.data);
+            console.log('CV generated:', response.data);
+            localStorage.setItem('generatedCV', JSON.stringify(response.data.cv));
+            router.push('/cv-preview')
         } catch (error) {
-            console.error('Error generando el CV:', error);
+            console.error('Error generating the resume:', error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -99,8 +107,8 @@ export default function CVWizard() {
             <StudiesSection studies={studies} setStudies={setStudies} />
             <SkillsSection skills={skills} setSkills={setSkills} />
             <div className='flex items-center justify-center mb-5'>
-                <button onClick={handleGenerateCV} className='border-2 border-solid border-indigo-600 rounded-full overflow-hidden duration-200 hover:opacity-70 hover:scale-95 cursor-pointer'>
-                    <p className='font-fugaz px-6 sm:px-10 whitespace-nowrap py-2 sm:py-3 text-indigo-600'>Generate Resume</p>
+                <button disabled={loading} onClick={handleGenerateCV} className='border-2 border-solid border-indigo-600 rounded-full overflow-hidden duration-200 hover:opacity-70 hover:scale-95 cursor-pointer'>
+                    <p className='font-fugaz px-6 sm:px-10 whitespace-nowrap py-2 sm:py-3 text-indigo-600'>{loading ? "Generating..." : "Generate Resume"}</p>
                 </button>
             </div>
         </div>

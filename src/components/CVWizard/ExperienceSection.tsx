@@ -2,6 +2,7 @@ import React from 'react'
 import SectionWrapper from '../SectionWrapper'
 import { Experience } from '@/app/generate-cv/page'
 import { ChevronDown, ChevronUp, Trash } from 'lucide-react'
+import AutoResizeTextArea from '../AutoResizeTextArea'
 type Props = {
     experiences: Experience[],
     setExperiences: React.Dispatch<React.SetStateAction<Experience[]>>
@@ -108,13 +109,7 @@ export const ExperienceSection = ({ experiences, setExperiences }: Props) => {
                                 </div>
                                 <div className="sm:col-span-2">
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                                    <textarea
-                                        name='description'
-                                        value={experience.description}
-                                        onChange={(e) => handleInputChange(e, index)}
-                                        placeholder="Implemented full stack applications..."
-                                        className="w-full bg-indigo-100 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-indigo-300"
-                                    />
+                                    <AutoResizeTextArea name='description' value={experience.description} onChange={(e) => handleInputChange(e, index)} placeholder='Designed and implemented responsive user interfaces that improved user engagement by 30%' className="w-full bg-indigo-100 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-indigo-300"/>
                                 </div>
                             </div>
                         )}
