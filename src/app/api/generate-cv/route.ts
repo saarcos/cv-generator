@@ -1,12 +1,21 @@
 import { openai } from "@ai-sdk/openai";
 import { generateText } from "ai";
 import { NextRequest, NextResponse } from "next/server";
-
+export function sanitizeAndParseJSON(raw: string) {
+  const trimmed = raw.trim();
+  const cleaned = trimmed.replace(/^```(?:json)?/i, '').replace(/```$/, '').trim();
+  try {
+    return JSON.parse(cleaned);
+  } catch (error) {
+    console.error("Failed to parse JSON from AI output:", error);
+    throw new Error("Invalid JSON format returned by the model.");
+  }
+}
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { personalInfo, experiences, studies, skills } = body;
-    
+
     const prompt = `
       You are a professional resume writer and formatter. Based on the user's data below, generate a JSON resume following this structure:
 
@@ -45,24 +54,26 @@ export async function POST(req: NextRequest) {
       }
 
       Instructions:
-      - Write the summary in **first person**, professional tone. Minimum 3 sentences.
+      - Write the summary in **first person**, with a professional and confident tone. Minimum 3 sentences.
       - The summary should reflect the user's expertise, experience level, industries worked in, key strengths, and highlight professionalism and continuous learning.
-      - If any startDate or graduationDate is missing or empty in education, set it to startDate: "Expected graduation:", graduationDate: "Upcoming"".
-      - For any missing skill categories (languages, technical, softSkills), infer reasonable values based on the rest of the user's data.
-      - For languages, infer the user's native language based on the language of the input data.
-      - Each bullet point under experience must start with a **strong verb**, be achievement-oriented, and mention **quantifiable results or technologies/tools used** when possible.
+      - Enhance the original experience and skills with more context or emphasis, but **do not invent specific statistics, percentages, or quantities** unless explicitly present in the user input.
+      - Bullet points must start with **strong action verbs**, focus on achievements or responsibilities, and mention relevant tools or technologies when applicable.
+      - If no metrics are provided, still write impactful bullet points that reflect initiative, collaboration, or outcomes without guessing numbers.
       - Include **3-5 bullet points per job**.
-      - If any other field is missing, infer reasonable placeholders based on similar profiles.
+      - If any startDate or graduationDate is missing or empty in education, set it to startDate: "Expected graduation:", graduationDate: "Upcoming".
+      - If any skill categories (languages, technical, softSkills) are missing, infer reasonable values based on the rest of the user's data.
+      - For languages, infer the user's native language based on the language of the input data.
+      - If any other field is missing, infer a reasonable placeholder based on similar professional profiles.
       - Be concise but informative.
 
       Example Summary:
       "I’m a dedicated marketing specialist with over 3 years of experience driving successful digital campaigns and content strategies. I excel at analyzing data to optimize results and enjoy collaborating with teams to innovate marketing approaches. I am passionate about continuous learning and staying up-to-date with industry trends."
 
-      ### Example Bullet Points:
-      - Spearheaded migration from legacy PHP system to React/Node.js stack, improving performance by 40%.
-      - Collaborated with cross-functional teams to launch a multi-tenant SaaS product serving 10k+ users.
-      - Reduced page load time by 35% through code-splitting and lazy loading.
-      - Mentored 3 junior developers, leading to a 25% team productivity increase.
+      ### Example Bullet Points (do not use these numbers unless given):
+      - Spearheaded migration from legacy PHP system to React/Node.js stack, improving performance significantly.
+      - Collaborated with cross-functional teams to launch a scalable multi-tenant SaaS product.
+      - Optimized frontend performance through code-splitting and lazy loading techniques.
+      - Mentored junior developers and contributed to a stronger team development culture.
 
       User Data:
       - Personal Info: ${JSON.stringify(personalInfo)}
@@ -71,17 +82,16 @@ export async function POST(req: NextRequest) {
       - Skills: ${skills.join(', ')}
 
       Return ONLY a valid JSON object.
-  `;
+      `;
 
     const result = await generateText({
-      model: openai('gpt-4'),
+      model: openai('gpt-4o'),
       prompt,
       temperature: 0.7,
     });
-
     let parsedCV;
     try {
-      parsedCV = JSON.parse(result.text);
+      parsedCV = sanitizeAndParseJSON(result.text);
     } catch {
       return NextResponse.json({ error: 'Invalid JSON returned by OpenAI.' }, { status: 500 });
     }

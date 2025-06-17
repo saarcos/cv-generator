@@ -112,7 +112,7 @@ export function CVDocument({ data }: { data: CV }) {
                                     <Text style={{ fontWeight: 'bold', color: '#1e1b4b' }}>{edu.degree}</Text>
                                     <Text style={{ fontWeight: 'bold', color: '#1e1b4b' }}>{edu.institution}</Text>
                                 </View>
-                                <Text style={{ fontStyle: 'italic', color: '#6b7280' }}>{dayjs(edu.startDate).format('MMMM D, YYYY') + " - " + dayjs(edu.graduationDate).format('MMMM D, YYYY')}</Text>
+                                <Text style={{ fontStyle: 'italic', color: '#6b7280' }}>{dayjs(edu.startDate).format('MMMM D, YYYY') + " – " + dayjs(edu.graduationDate).format('MMMM D, YYYY')}</Text>
                             </View>
                         </View>
                     ))}

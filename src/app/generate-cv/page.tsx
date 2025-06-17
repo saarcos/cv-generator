@@ -1,12 +1,16 @@
 "use client"
+import CustomAlert from '@/components/CustomAlert';
 import { ExperienceSection } from '@/components/CVWizard/ExperienceSection';
 import PersonalInfoSection from '@/components/CVWizard/PersonalInfoSection';
 import SkillsSection from '@/components/CVWizard/SkillsSection';
 import StudiesSection from '@/components/CVWizard/StudiesSection';
+import { experienceSchema, personalInfoSchema, skillsSchema, studySchema } from '@/components/CVWizard/validation';
 import ScrollProgressBar from '@/components/ScrollProgressBar';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
-import React, { useState } from 'react'
+import React, { useState } from 'react';
+import { z } from 'zod';;
+
 export type PersonalInformation = {
     firstName: string,
     lastName: string,
@@ -35,6 +39,7 @@ export type Studies = {
 export default function CVWizard() {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
     const [personalInformation, setPersonalInformation] = useState<PersonalInformation>({
         firstName: '',
         lastName: '',
@@ -62,6 +67,19 @@ export default function CVWizard() {
     }]);
     const [skills, setSkills] = useState<string[]>([]);
     const handleGenerateCV = async () => {
+        try {
+            personalInfoSchema.parse(personalInformation);
+            experiences.forEach((exp) => experienceSchema.parse(exp));
+            studies.forEach((edu) => studySchema.parse(edu));
+            skillsSchema.parse(skills);
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                setErrorMessage(
+                    `Please make sure you’ve completed each section with at least one valid entry, then try generating the resume again.`
+                );
+                return;
+            }
+        }
         setLoading(true);
         try {
             const formData = {
@@ -101,6 +119,7 @@ export default function CVWizard() {
 
     return (
         <div>
+            {errorMessage && (<CustomAlert message={errorMessage} onClose={() => setErrorMessage('')} />)}
             <ScrollProgressBar />
             <PersonalInfoSection personalInformation={personalInformation} setPersonalInformation={setPersonalInformation} />
             <ExperienceSection experiences={experiences} setExperiences={setExperiences} />

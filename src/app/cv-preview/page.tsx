@@ -1,9 +1,10 @@
 "use client"
 import React, { useEffect, useState } from 'react';
-import { Trash } from 'lucide-react';
+import { Trash, X } from 'lucide-react';
 import AutoResizeTextArea from '@/components/AutoResizeTextArea';
 import dayjs from 'dayjs';
 import { DownloadResumeButton } from '@/components/pdf/downloadResumeButton';
+import LoadingPreview from './LoadingPreview';
 
 export type CV = {
     header: {
@@ -129,7 +130,7 @@ export default function CVPreview() {
         })
     }
 
-    if (!cv) return <p>Loading CV preview...</p>;
+    if (!cv) return <LoadingPreview />;
 
     return (
         <form className="flex flex-col gap-2 px-2 sm:px-4 lg:px-8 py-4">
@@ -321,30 +322,33 @@ export default function CVPreview() {
                     <h2 className="text-2xl font-semibold text-indigo-600 mb-2">Skills</h2>
                     <hr className="border-gray-300 mb-4" />
                     {(['languages', 'technical', 'softSkills'] as const).map((category) => (
-                        <div key={category} className="mb-1 flex flex-col sm:flex-row sm:items-center gap-2">
-                            <span className="font-medium text-gray-800 capitalize">{category === 'softSkills' ? 'Soft Skills' : category}:</span>
-                            {cv.skills[category].map((skill, index) => (
-                                <div key={index} className='flex items-center gap-1'>
-                                    <input
-                                        type="text"
-                                        value={skill}
-                                        onChange={(e) => handleSkillChange(category, index, e.target.value)}
-                                        className="ml-2 outline-none bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-300 rounded-xl p-1 text-gray-700 font-semibold text-base"
-                                    />
-                                    <button
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            removeSkill(index, category)
-                                        }}
-                                        aria-label="Remove bullet"
-                                        title="Remove bullet"
-                                        className="text-indigo-400 hover:text-red-500 transition-colors duration-200 h-6 flex items-center justify-center cursor-pointer"
-                                    >
-                                        <Trash className="w-5 h-5" />
-                                    </button>
-                                </div>
-
-                            ))}
+                        <div key={category} className="mb-1 flex flex-col gap-2">
+                            <span className="font-medium text-gray-800 capitalize">
+                                {category === 'softSkills' ? 'Soft Skills' : category}:
+                            </span>
+                            <div className="flex flex-wrap gap-2">
+                                {cv.skills[category].map((skill, index) => (
+                                    <div key={index} className="flex items-center gap-1 max-w-full">
+                                        <input
+                                            type="text"
+                                            value={skill}
+                                            onChange={(e) => handleSkillChange(category, index, e.target.value)}
+                                            className="max-w-full truncate outline-none bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-300 rounded-xl p-1 text-gray-700 font-semibold text-base"
+                                        />
+                                        <button
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                removeSkill(index, category);
+                                            }}
+                                            aria-label="Remove bullet"
+                                            title="Remove bullet"
+                                            className="text-indigo-400 hover:text-red-500 transition-colors duration-200 h-6 flex items-center justify-center cursor-pointer"
+                                        >
+                                            <X className="w-5 h-5" />
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     ))}
                 </section>

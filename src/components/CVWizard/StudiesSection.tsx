@@ -36,6 +36,10 @@ export default function StudiesSection({ studies, setStudies }: Props) {
 
         const newValue = type === "checkbox" ? checked : value;
 
+        if (type === "checkbox") {
+            setStudies(prev => prev.map((study, i) => i === index ? { ...study, startDate: '', endDate: '' } : study))
+        }
+
         setStudies(prev =>
             prev.map((item, i) =>
                 i === index ? { ...item, [name]: newValue } : item
