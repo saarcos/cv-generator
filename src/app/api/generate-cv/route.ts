@@ -1,16 +1,8 @@
+import { sanitizeAndParseJSON } from "@/utils/sanitizeJson";
 import { openai } from "@ai-sdk/openai";
 import { generateText } from "ai";
 import { NextRequest, NextResponse } from "next/server";
-export function sanitizeAndParseJSON(raw: string) {
-  const trimmed = raw.trim();
-  const cleaned = trimmed.replace(/^```(?:json)?/i, '').replace(/```$/, '').trim();
-  try {
-    return JSON.parse(cleaned);
-  } catch (error) {
-    console.error("Failed to parse JSON from AI output:", error);
-    throw new Error("Invalid JSON format returned by the model.");
-  }
-}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
