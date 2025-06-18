@@ -1,6 +1,6 @@
 # GenerateCV
 
-**GenerateCV** is a web application that allows users to create, edit, and export professional resumes in PDF format. The app includes AI-assisted summary generation using OpenAI's API, providing users with enhanced writing support.
+**GenerateCV** is a web application that allows users to create, edit, and export professional resumes in PDF format. The app includes AI-assisted summary generation using OpenAI's API, providing users with enhanced writing support. Give it a try here: cv-generator-eight-mu.vercel.app
 
 ## Features
 
