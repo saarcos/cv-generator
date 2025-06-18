@@ -1,7 +1,7 @@
 import React from 'react';
 import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
-import { CV } from '@/app/cv-preview/page';
 import dayjs from 'dayjs';
+import { CV } from '../CVPreview/CVPreview';
 
 const styles = StyleSheet.create({
     page: {

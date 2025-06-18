@@ -2,7 +2,7 @@
 import React from 'react';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import { CVDocument } from './cvDocument';
-import { CV } from '@/app/cv-preview/page';
+import { CV } from '../CVPreview/CVPreview';
 
 export function DownloadResumeButton({ cvData }: { cvData: CV }) {
     const document = React.useMemo(() => <CVDocument data={cvData} />, [cvData]);
